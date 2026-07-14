@@ -26,3 +26,7 @@ venv/
 # Operating system
 .DS_Store
 Thumbs.db
+
+# Generated import reports
+reports/*.json
+!reports/.gitkeep
