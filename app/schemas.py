@@ -96,3 +96,13 @@ class TransactionRead(TransactionCreate):
     id: int
     created_at: datetime
     updated_at: datetime
+
+class TransactionUpdate(TransactionCreate):
+    pass
+
+
+class TransactionListResponse(BaseModel):
+    items: list[TransactionRead]
+    total: int
+    limit: int
+    offset: int
