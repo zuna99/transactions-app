@@ -60,18 +60,22 @@ function getFormData() {
 }
 
 async function loadTransactions() {
-    const parameters = new URLSearchParams({
-        limit: limit.toString(),
-        offset: offset.toString(),
-        sort_by: sortByInput.value,
-        sort_order: sortOrderInput.value,
-    });
+    const parameters = new URLSearchParams();
+
+    parameters.set("limit", limit.toString());
+    parameters.set("offset", offset.toString());
+    parameters.set("sort_by", sortByInput.value);
+    parameters.set("sort_order", sortOrderInput.value);
 
     const search = searchInput.value.trim();
 
     if (search) {
         parameters.set("search", search);
     }
+
+    console.log(
+        `/api/transactions?${parameters.toString()}`
+    );
 
     const response = await fetch(
         `/api/transactions?${parameters.toString()}`
@@ -201,21 +205,7 @@ form.addEventListener("submit", async (event) => {
     await loadTransactions();
 });
 
-sortByInput.addEventListener(
-    "change",
-    async () => {
-        offset = 0;
-        await loadTransactions();
-    }
-);
 
-sortOrderInput.addEventListener(
-    "change",
-    async () => {
-        offset = 0;
-        await loadTransactions();
-    }
-);
 
 document
     .querySelector("#search-button")
@@ -241,5 +231,15 @@ document
     });
 
 cancelEditButton.addEventListener("click", resetForm);
+
+sortByInput.addEventListener("change", async () => {
+    offset = 0;
+    await loadTransactions();
+});
+
+sortOrderInput.addEventListener("change", async () => {
+    offset = 0;
+    await loadTransactions();
+});
 
 loadTransactions();

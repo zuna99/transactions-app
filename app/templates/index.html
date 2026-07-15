@@ -120,12 +120,24 @@
         <div class="table-header">
             <h2>Transactions</h2>
 
-            <div>
-                <input
-                    id="search"
-                    placeholder="Search records..."
-                >
-                <button id="search-button">Search</button>
+            <div class="table-controls">
+                <select id="sort-by">
+                <option value="date">Sort by date</option>
+                <option value="id">Sort by ID</option>
+                <option value="category">Sort by category</option>
+            </select>
+
+            <select id="sort-order">
+                <option value="desc">Descending</option>
+                <option value="asc">Ascending</option>
+            </select>
+
+            <input
+                id="search"
+                placeholder="Search records..."
+            >
+
+            <button id="search-button">Search</button>
             </div>
         </div>
 
