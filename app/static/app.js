@@ -4,6 +4,8 @@ const message = document.querySelector("#message");
 const formTitle = document.querySelector("#form-title");
 const cancelEditButton = document.querySelector("#cancel-edit");
 const searchInput = document.querySelector("#search");
+const sortByInput = document.querySelector("#sort-by");
+const sortOrderInput = document.querySelector("#sort-order");
 
 const limit = 25;
 let offset = 0;
@@ -58,10 +60,21 @@ function getFormData() {
 }
 
 async function loadTransactions() {
-    const search = encodeURIComponent(searchInput.value.trim());
+    const parameters = new URLSearchParams({
+        limit: limit.toString(),
+        offset: offset.toString(),
+        sort_by: sortByInput.value,
+        sort_order: sortOrderInput.value,
+    });
+
+    const search = searchInput.value.trim();
+
+    if (search) {
+        parameters.set("search", search);
+    }
 
     const response = await fetch(
-        `/api/transactions?limit=${limit}&offset=${offset}&search=${search}`
+        `/api/transactions?${parameters.toString()}`
     );
 
     const data = await response.json();
@@ -187,6 +200,22 @@ form.addEventListener("submit", async (event) => {
 
     await loadTransactions();
 });
+
+sortByInput.addEventListener(
+    "change",
+    async () => {
+        offset = 0;
+        await loadTransactions();
+    }
+);
+
+sortOrderInput.addEventListener(
+    "change",
+    async () => {
+        offset = 0;
+        await loadTransactions();
+    }
+);
 
 document
     .querySelector("#search-button")

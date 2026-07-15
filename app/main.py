@@ -26,6 +26,8 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
+from typing import Literal
+
 
 app = FastAPI(
     title="Business Transactions Application",
@@ -84,23 +86,25 @@ def database_health_check(
     response_model=TransactionListResponse,
 )
 def list_transactions(
-    limit: int = Query(
-        default=25,
-        ge=1,
-        le=100,
-    ),
-    offset: int = Query(
-        default=0,
-        ge=0,
-    ),
+    limit: int = 25,
+    offset: int = 0,
     account_number: str | None = None,
     currency: str | None = None,
     transaction_type: str | None = None,
     category: str | None = None,
     search: str | None = None,
+    sort_by: Literal[
+        "id",
+        "date",
+        "category",
+    ] = "date",
+    sort_order: Literal[
+        "asc",
+        "desc",
+    ] = "desc",
     database: Session = Depends(get_db),
 ) -> TransactionListResponse:
-    transactions, total = list_transactions_raw(
+    items, total = list_transactions_raw(
         database=database,
         limit=limit,
         offset=offset,
@@ -109,10 +113,12 @@ def list_transactions(
         transaction_type=transaction_type,
         category=category,
         search=search,
+        sort_by=sort_by,
+        sort_order=sort_order,
     )
 
     return TransactionListResponse(
-        items=transactions,
+        items=items,
         total=total,
         limit=limit,
         offset=offset,

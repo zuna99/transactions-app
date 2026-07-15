@@ -13,6 +13,8 @@ def list_transactions_raw(
     transaction_type: str | None = None,
     category: str | None = None,
     search: str | None = None,
+    sort_by: str = "date",
+    sort_order: str = "desc",
 ) -> tuple[list[dict[str, Any]], int]:
     conditions: list[str] = []
     parameters: dict[str, Any] = {}
@@ -63,6 +65,36 @@ def list_transactions_raw(
             "WHERE " + " AND ".join(conditions)
         )
 
+    # The user cannot directly provide an SQL column name.
+    # Only these predefined sorting options are allowed.
+    sort_columns = {
+        "id": "id",
+        "date": "transaction_date",
+        "category": "LOWER(category)",
+    }
+
+    sort_directions = {
+        "asc": "ASC",
+        "desc": "DESC",
+    }
+
+    sort_column = sort_columns.get(
+        sort_by,
+        "transaction_date",
+    )
+
+    sort_direction = sort_directions.get(
+        sort_order,
+        "DESC",
+    )
+
+    # Add ID as a secondary sorting field so that the
+    # ordering remains stable when values are equal.
+    secondary_order = ""
+
+    if sort_by != "id":
+        secondary_order = f", id {sort_direction}"
+
     count_query = text(
         f"""
         SELECT COUNT(*)
@@ -100,7 +132,9 @@ def list_transactions_raw(
             updated_at
         FROM transactions
         {where_clause}
-        ORDER BY transaction_date DESC, id DESC
+        ORDER BY
+            {sort_column} {sort_direction}
+            {secondary_order}
         LIMIT :limit
         OFFSET :offset
         """

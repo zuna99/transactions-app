@@ -97,3 +97,17 @@ th {
 .error {
     color: #b91c1c;
 }
+
+.table-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+select {
+    padding: 9px;
+    border: 1px solid #bbb;
+    border-radius: 4px;
+    background: white;
+}

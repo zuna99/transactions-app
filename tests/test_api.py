@@ -176,3 +176,36 @@ def test_invalid_date_returns_validation_error(
     )
 
     assert response.status_code == 422
+
+def test_list_transactions_sorted_by_id(
+    client: TestClient,
+) -> None:
+    first_response = client.post(
+        "/api/transactions",
+        json=transaction_payload(
+            reference_number="SORT-001",
+        ),
+    )
+
+    second_response = client.post(
+        "/api/transactions",
+        json=transaction_payload(
+            reference_number="SORT-002",
+        ),
+    )
+
+    first_id = first_response.json()["id"]
+    second_id = second_response.json()["id"]
+
+    response = client.get(
+        "/api/transactions"
+        "?sort_by=id"
+        "&sort_order=asc"
+    )
+
+    assert response.status_code == 200
+
+    items = response.json()["items"]
+
+    assert items[0]["id"] == first_id
+    assert items[1]["id"] == second_id
